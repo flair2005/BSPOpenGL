@@ -18,14 +18,22 @@ TEMPLATE = app
 
 INCLUDEPATH += glm
 
+OTHER_FILES = simple.vert simple.frag
+
 SOURCES += main.cpp\
-        MainWindow.cpp \
+    MainWindow.cpp \
     GLWidget.cpp \
     Triangle.cpp \
     Vector3.cpp \
     Matrix4.cpp \
     Vector4.cpp \
-    Quaternion.cpp
+    Quaternion.cpp \
+    Shader.cpp \
+    ShaderProgram.cpp \
+    VAO.cpp \
+    VBO.cpp \
+    IGLBindable.cpp \
+    Camera.cpp
 
 HEADERS  += MainWindow.h \
     GLWidget.h \
@@ -33,6 +41,13 @@ HEADERS  += MainWindow.h \
     Vector3.h \
     Matrix4.h \
     Vector4.h \
-    Quaternion.h
+    Quaternion.h \
+    Shader.h \
+    ShaderProgram.h \
+    VAO.h \
+    VBO.h \
+    IGLIdable.h \
+    IGLBindable.h \
+    Camera.h
 
-FORMS    += MainWindow.ui
+FORMS += MainWindow.ui
