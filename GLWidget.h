@@ -4,9 +4,11 @@
 #include <GL/glew.h>
 
 #include <QTimer>
+#include <QKeyEvent>
 #include <QtOpenGL/QGLWidget>
 
 
+#include "Plane.h"
 #include "Camera.h"
 #include "Triangle.h"
 
@@ -21,9 +23,15 @@ public:
     QTimer timer;
 
     std::list<Triangle*> triangles;
+    std::list<Plane*> planes;
 
     ShaderProgram *program = nullptr;
     Camera *camera = nullptr;
+
+    static float Rand();
+    static float RandAbs();
+
+    void keyPressEvent(QKeyEvent *ev) override;
 
 protected:
     void initializeGL() override;

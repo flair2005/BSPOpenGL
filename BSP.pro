@@ -1,9 +1,3 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2016-11-01T21:24:21
-#
-#-------------------------------------------------
-
 QT_VERSION = 4
 QT += core gui widgets opengl
 
@@ -33,7 +27,9 @@ SOURCES += main.cpp\
     VAO.cpp \
     VBO.cpp \
     IGLBindable.cpp \
-    Camera.cpp
+    Camera.cpp \
+    Plane.cpp \
+    Segment.cpp
 
 HEADERS  += MainWindow.h \
     GLWidget.h \
@@ -48,6 +44,8 @@ HEADERS  += MainWindow.h \
     VBO.h \
     IGLIdable.h \
     IGLBindable.h \
-    Camera.h
+    Camera.h \
+    Plane.h \
+    Segment.h
 
 FORMS += MainWindow.ui
