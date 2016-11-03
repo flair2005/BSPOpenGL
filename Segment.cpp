@@ -37,14 +37,14 @@ bool Segment::IsPointInRight(const Vector3 &p)
 inline bool Segment::InsideBoundingRect(const Vector3 &p)
 {
     return p.x >= std::min(p1.x, p2.x) && p.x <= std::max(p1.x, p2.x) &&
-            p.y >= std::min(p1.y, p2.y) && p.y <= std::max(p1.y, p2.y);
+           p.y >= std::min(p1.y, p2.y) && p.y <= std::max(p1.y, p2.y);
 }
 
 bool Segment::GetIntersection(const Plane &plane,
                               Vector3 *intersectionPoint) const
 {
-    float distp1 = Vector3::Dot(plane.normal, (p1-plane.point));
-    float distp2 = Vector3::Dot(plane.normal, (p2-plane.point));
+    float distp1 = Vector3::Dot(plane.normal, (p1 - plane.point));
+    float distp2 = Vector3::Dot(plane.normal, (p2 - plane.point));
     if (distp1 * distp2 > 0) return false; // There is no intersection
 
     Vector3 x = (p2-p1).Normalized();

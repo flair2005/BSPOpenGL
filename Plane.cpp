@@ -4,6 +4,7 @@ Plane::Plane()
 {
     vao = new VAO();
     vbo = new VBO();
+    color = Vector4(Math::Rand(), Math::Rand(), Math::Rand(), 0.95f);
 }
 
 Plane::Plane(const Vector3 &point, const Vector3 &normal) : Plane()
@@ -28,8 +29,8 @@ void Plane::RefreshData()
     Vector3 v1 = Vector3::Cross(normal, normal + Vector3(1,0,0)).Normalized();
     Vector3 v2 = Vector3::Cross(normal, v1).Normalized();
     v1 *= 99999.0f; v2 *= 99999.0f;
-    Vector3 data[6] = {-v1-v2, -v1+v2, v1-v2,
-                       v1-v2, -v1+v2, v1+v2};
+    Vector3 data[6] = {point-v1-v2, point-v1+v2, point+v1-v2,
+                       point+v1-v2, point-v1+v2, point+v1+v2};
     vbo->Fill(&data[0], sizeof(Vector3) * 6);
     vao->BindVBO(vbo, 0, 3);
 
@@ -39,7 +40,7 @@ void Plane::Draw(ShaderProgram *program)
 {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    program->SetUniformVec4("color", Vector4(0,0,0,0.98));
+    program->SetUniformVec4("color", color);
     vao->Bind();
     glDrawArrays(GL_TRIANGLES, 0, 6);
     vao->UnBind();

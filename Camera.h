@@ -13,11 +13,13 @@ public:
     Vector3 position = Vector3::Zero;
     Quaternion rotation = Quaternion::Identity;
 
+    const float camSpeed = 4.0f;
+    const float camRotSpeed = 0.05f;
+
     Camera();
     virtual ~Camera();
 
     void Update();
-    void OnKeyPressedEvent(QKeyEvent *ev);
 
     Quaternion GetRotation();
     Vector3 GetForward();

@@ -3,6 +3,7 @@
 
 #include "VAO.h"
 #include "VBO.h"
+#include "Math.h"
 #include "Vector3.h"
 #include "ShaderProgram.h"
 

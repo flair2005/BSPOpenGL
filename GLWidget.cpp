@@ -4,7 +4,10 @@
 
 #include <GL/gl.h>
 
+#include "Math.h"
 #include "Plane.h"
+
+GLWidget *GLWidget::instance = nullptr;
 
 GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent)
 {
@@ -15,6 +18,10 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent)
     timer.start(50);
     connect(&timer, SIGNAL(timeout()), this, SLOT(Update()));
 
+    GLWidget::instance = this;
+    input = new Input();
+
+    setMouseTracking(true);
     setFocusPolicy(Qt::ClickFocus);
 }
 
@@ -23,20 +30,61 @@ GLWidget::~GLWidget()
 
 }
 
-float GLWidget::Rand()
-{
-    return ( rand() % 1000 - 500) / 500.0f;
-}
-
-float GLWidget::RandAbs()
-{
-    return Rand() * 0.5f + 0.5f;
-}
-
 void GLWidget::keyPressEvent(QKeyEvent *ev)
 {
+    input->EnqueueEvent(ev);
     QGLWidget::keyPressEvent(ev);
-    camera->OnKeyPressedEvent(ev);
+}
+
+void GLWidget::keyReleaseEvent(QKeyEvent *ev)
+{
+    input->EnqueueEvent(ev);
+    QGLWidget::keyReleaseEvent(ev);
+}
+
+void GLWidget::mouseDoubleClickEvent(QMouseEvent *ev)
+{
+    input->EnqueueEvent(ev);
+    QGLWidget::mouseDoubleClickEvent(ev);
+}
+
+void GLWidget::mouseMoveEvent(QMouseEvent *ev)
+{
+    input->EnqueueEvent(ev);
+    QGLWidget::mouseMoveEvent(ev);
+}
+
+void GLWidget::mousePressEvent(QMouseEvent *ev)
+{
+    input->EnqueueEvent(ev);
+    QGLWidget::mousePressEvent(ev);
+}
+
+void GLWidget::mouseReleaseEvent(QMouseEvent *ev)
+{
+    input->EnqueueEvent(ev);
+    QGLWidget::mouseReleaseEvent(ev);
+}
+
+void GLWidget::wheelEvent(QWheelEvent *ev)
+{
+    input->EnqueueEvent(ev);
+    QGLWidget::wheelEvent(ev);
+}
+
+int GLWidget::GetWidth()
+{
+    return GLWidget::GetInstance()->width();
+}
+
+int GLWidget::GetHeight()
+{
+    return GLWidget::GetInstance()->height();
+}
+
+GLWidget *GLWidget::GetInstance()
+{
+    return GLWidget::instance;
 }
 
 void GLWidget::initializeGL()
@@ -49,13 +97,13 @@ void GLWidget::initializeGL()
     program = new ShaderProgram("simple.vert", "simple.frag");
     program->Link();
 
-    for (int i = 0; i < 1; ++i)
+    for (int i = 0; i < 30; ++i)
     {
-        int size = RandAbs() * 50 + 30;
-        Vector3 v1 = Vector3(Rand(), Rand(), Rand()).Normalized() * size;
-        Vector3 v2 = Vector3(Rand(), Rand(), Rand()).Normalized() * size;
-        Vector3 v3 = Vector3(Rand(), Rand(), Rand()).Normalized() * size;
-        Vector3 center = Vector3(Rand(), Rand(), Rand()) * 0.0f;
+        int size = Math::RandAbs() * 5 + 5;
+        Vector3 v1 = Vector3(Math::Rand(), Math::Rand(), Math::Rand()).Normalized() * size;
+        Vector3 v2 = Vector3(Math::Rand(), Math::Rand(), Math::Rand()).Normalized() * size;
+        Vector3 v3 = Vector3(Math::Rand(), Math::Rand(), Math::Rand()).Normalized() * size;
+        Vector3 center = Vector3(Math::Rand(), Math::Rand(), Math::Rand()) * 30.0f;
 
         Triangle *tri = new Triangle(center + v1, center + v2, center + v3);
         tri->RefreshData();
@@ -63,36 +111,34 @@ void GLWidget::initializeGL()
         triangles.push_back(tri);
     }
 
-    Plane *plane = new Plane(Vector3::Zero, Vector3(Rand(), Rand(), Rand()));
-    std::list<Triangle*> splitTriangles;
-    for (auto it = triangles.begin(); it != triangles.end(); ++it)
+    for (int i = 0; i < 3; ++i)
     {
-        Triangle *tri = *it;
-        Vector3 int1, int2;
-        int numIntersections = tri->GetIntersectionWithPlane(*plane, &int1, &int2);
-        if (numIntersections > 0)
+        Plane *plane = new Plane(Vector3::Up, Math::RandVector3());
+        std::list<Triangle*> splitTriangles;
+        for (auto it = triangles.begin(); it != triangles.end(); ++it)
         {
-            std::cout << numIntersections << std::endl;
-            tri->color = Vector4(0,1,1,1);
-            Triangle *splitTri1, *splitTri2, *splitTri3;
-            if (tri->SplitWithPlane(plane, &splitTri1, &splitTri2, &splitTri3))
+            Triangle *tri = *it;
+            Vector3 int1, int2;
+            int numIntersections = tri->GetIntersectionWithPlane(*plane, &int1, &int2);
+            if (numIntersections > 0)
             {
-                splitTriangles.push_back(splitTri1);
-                splitTriangles.push_back(splitTri2);
-                splitTriangles.push_back(splitTri3);
-                splitTri1->color = Vector4(0,1,0,1);
-                splitTri2->color = Vector4(0,0,1,1);
-                splitTri3->color = Vector4(1,0,1,1);
+                Triangle *splitTri1, *splitTri2, *splitTri3;
+                if (tri->SplitWithPlane(plane, &splitTri1, &splitTri2, &splitTri3))
+                {
+                    splitTriangles.push_back(splitTri1);
+                    splitTriangles.push_back(splitTri2);
+                    splitTriangles.push_back(splitTri3);
+                }
+            }
+            else
+            {
+                splitTriangles.push_back(tri);
             }
         }
-        else
-        {
-            splitTriangles.push_back(tri);
-        }
+        triangles = splitTriangles;
+        plane->RefreshData();
+        planes.push_back(plane);
     }
-    triangles = splitTriangles;
-    plane->RefreshData();
-    planes.push_back(plane);
 
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
@@ -115,9 +161,12 @@ void GLWidget::paintGL()
         tri->Draw(program);
     }
 
-    for (Plane *plane : planes)
+    if (seePlanes)
     {
-        plane->Draw(program);
+        for (Plane *plane : planes)
+        {
+            plane->Draw(program);
+        }
     }
 
     program->UnBind();
@@ -125,8 +174,17 @@ void GLWidget::paintGL()
 
 void GLWidget::Update()
 {
+    //processEvents();
+    input->ProcessEnqueuedEvents();
+
     camera->Update();
     update();
+    input->OnFrameFinished();
+}
+
+void GLWidget::OnSeePlanesToggled(bool v)
+{
+    seePlanes = v;
 }
 
 

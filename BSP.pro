@@ -29,7 +29,9 @@ SOURCES += main.cpp\
     IGLBindable.cpp \
     Camera.cpp \
     Plane.cpp \
-    Segment.cpp
+    Segment.cpp \
+    Input.cpp \
+    Math.cpp
 
 HEADERS  += MainWindow.h \
     GLWidget.h \
@@ -46,6 +48,8 @@ HEADERS  += MainWindow.h \
     IGLBindable.h \
     Camera.h \
     Plane.h \
-    Segment.h
+    Segment.h \
+    Input.h \
+    Math.h
 
 FORMS += MainWindow.ui

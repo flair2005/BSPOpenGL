@@ -5,6 +5,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 {
     ui->setupUi(this);
     glwidget = ui->glWidget;
+    glwidget->focusWidget();
 }
 
 MainWindow::~MainWindow()

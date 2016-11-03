@@ -1,6 +1,7 @@
 #include "Camera.h"
 
 #include <iostream>
+#include "Input.h"
 
 Camera::Camera()
 {
@@ -14,40 +15,49 @@ Camera::~Camera()
 
 void Camera::Update()
 {
-    // rotation = Quaternion::AngleAxis(0.01f, Vector3::Up) * rotation;
-    // rotation = rotation.Normalized();
-}
+    if (!Input::GetKey(Input::Key::Shift))
+    {
+        if (Input::GetKey(Input::Key::W))
+        {
+            rotation = Quaternion::AngleAxis(camRotSpeed, GetRight()) * GetRotation();
+        }
+        else if (Input::GetKey(Input::Key::S))
+        {
+            rotation = Quaternion::AngleAxis(-camRotSpeed, GetRight()) * GetRotation();
+        }
 
-void Camera::OnKeyPressedEvent(QKeyEvent *ev)
-{
-    float camSpeed = 4.0f;
-    float camRotSpeed = 0.05f;
-    if (ev->key() == Qt::Key_W)
-    {
-        position += GetForward() * camSpeed;
+        if (Input::GetKey(Input::Key::A))
+        {
+            rotation = Quaternion::AngleAxis(camRotSpeed, GetUp()) * GetRotation();
+        }
+        else if (Input::GetKey(Input::Key::D))
+        {
+            rotation = Quaternion::AngleAxis(-camRotSpeed, GetUp()) * GetRotation();
+        }
+
     }
-    else if (ev->key() == Qt::Key_S)
+    else // Panning
     {
-        position += -GetForward() * camSpeed;
+        if (Input::GetKey(Input::Key::W))
+        {
+            position += GetUp() * camSpeed;
+        }
+        else if (Input::GetKey(Input::Key::S))
+        {
+            position += -GetUp() * camSpeed;
+        }
+
+        if (Input::GetKey(Input::Key::A))
+        {
+            position += -GetRight() * camSpeed;
+        }
+        else if (Input::GetKey(Input::Key::D))
+        {
+            position += GetRight() * camSpeed;
+        }
     }
 
-    if (ev->key() == Qt::Key_A)
-    {
-        rotation = Quaternion::AngleAxis(camRotSpeed, GetUp()) * GetRotation();
-    }
-    else if (ev->key() == Qt::Key_D)
-    {
-        rotation = Quaternion::AngleAxis(-camRotSpeed, GetUp()) * GetRotation();
-    }
-
-    if (ev->key() == Qt::Key_Q)
-    {
-        rotation = Quaternion::AngleAxis(camRotSpeed, GetRight()) * GetRotation();
-    }
-    else if (ev->key() == Qt::Key_E)
-    {
-        rotation = Quaternion::AngleAxis(-camRotSpeed, GetRight()) * GetRotation();
-    }
+    position += GetForward() * Input::GetMouseWheel() * 3.0f;
 }
 
 Quaternion Camera::GetRotation()

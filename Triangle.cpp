@@ -7,7 +7,7 @@ Triangle::Triangle()
 {
     vbo = new VBO();
     vao = new VAO();
-    color = Vector4(GLWidget::RandAbs(), GLWidget::RandAbs(), GLWidget::RandAbs(), 1.0f);
+    color = Vector4(Math::RandAbsVector3(), 1);
 }
 
 Triangle::Triangle(const Vector3 &p1, const Vector3 &p2, const Vector3 &p3) : Triangle()
@@ -79,53 +79,6 @@ bool Triangle::SplitWithPlane(Plane *plane,
             pointToSideB_2 = p3;
         }
 
-        /*
-        if (s12.IsPointOver(intersection1))
-        {
-            pointToSideB_1 = p3;
-            if (s13.IsPointOver(intersection2))
-            {
-                pointToSideAAlone = p1;
-                pointToSideB_2 = p2;
-            }
-            else //s23.IsPointOver(intersection2))
-            {
-                pointToSideAAlone = p2;
-                pointToSideB_2 = p1;
-            }
-        }
-        else if (s13.IsPointOver(intersection1))
-        {
-            pointToSideB_1 = p2;
-            if (s12.IsPointOver(intersection2))
-            {
-                pointToSideAAlone = p1;
-                pointToSideB_2 = p3;
-            }
-            else //s23.IsPointOver(intersection2))
-            {
-                pointToSideAAlone = p3;
-                pointToSideB_2 = p1;
-            }
-        }
-        else //s23.IsPointOver(intersection1)
-        {
-            pointToSideB_1 = p1;
-            if (s12.IsPointOver(intersection2))
-            {
-                pointToSideAAlone = p2;
-                pointToSideB_2 = p3;
-            }
-            else //s13.IsPointOver(intersection1)
-            {
-                pointToSideAAlone = p3;
-                pointToSideB_2 = p2;
-            }
-        }
-        */
-
-        std::cout << intersection1.ToString() << std::endl;
-        std::cout << intersection2.ToString() << std::endl;
         *splitTri1 = new Triangle(intersection1, intersection2, pointToSideAAlone);
         *splitTri2 = new Triangle(intersection1, intersection2, pointToSideB_1);
 
@@ -164,7 +117,7 @@ void Triangle::Draw(ShaderProgram *program)
     glDrawArrays(GL_TRIANGLES, 0, 3);
     program->SetUniformVec4("color", Vector4(1,1,0,1));
     glDepthFunc(GL_LEQUAL);
-    glLineWidth(3.0f);
+    glLineWidth(1.0f);
     glDrawArrays(GL_LINE_STRIP, 0, 4);
     glDepthFunc(GL_LESS);
     vao->UnBind();
