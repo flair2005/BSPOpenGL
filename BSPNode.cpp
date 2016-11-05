@@ -2,6 +2,8 @@
 
 #include "GLWidget.h"
 
+int BSPNode::renderStep = 0;
+
 BSPNode::BSPNode(Triangle *initialTriangle)
 {
     splitPlane = Plane::FromTriangle(*initialTriangle);
@@ -17,59 +19,56 @@ BSPNode::~BSPNode()
     {
         delete tri;
     }
-    if (bspBehind) delete bspBehind;
-    if (bspFront) delete bspFront;
+    if (bspChildFront)  delete bspChildFront;
+    if (bspChildBehind) delete bspChildBehind;
 }
 
-void BSPNode::InsertTriangle(Triangle *tri)
+BSPNode *BSPNode::ConstructBSPTree(std::list<Triangle *> &trianglesPool)
 {
-    if (tri->IsPartOfPlane(splitPlane))
+    if (trianglesPool.size() == 0) { return nullptr; }
+
+    BSPNode *root = new BSPNode(trianglesPool.front()); trianglesPool.pop_front();
+    std::list<Triangle*> trianglesWhollyInFront, trianglesWhollyBehind;
+    for (Triangle *tri : trianglesPool)
     {
-        triangles.push_back(tri);
-    }
-    else
-    {
-        if (tri->IsWhollyInFrontOfPlane(splitPlane))
+        if (tri->IsPartOfPlane(root->splitPlane)) // Add it to the list of triangles of the node
         {
-            if (bspFront)
-            {
-                bspFront->InsertTriangle(tri);
-            }
-            else
-            {
-                bspFront = new BSPNode(tri);
-            }
+            root->triangles.push_back(tri);
         }
-        else if (tri->IsWhollyBehindOfPlane(splitPlane))
+        else // It must be wholly in front, wholly behind, or intersecting
         {
-            if (bspBehind)
+            if (tri->IsWhollyInFrontOfPlane(root->splitPlane))     { trianglesWhollyInFront.push_back(tri); } // Wholly in front
+            else if (tri->IsWhollyBehindOfPlane(root->splitPlane)) {  trianglesWhollyBehind.push_back(tri); } // Wholly behind
+            else                                             // Intersecting (Split and classify)
             {
-                bspBehind->InsertTriangle(tri);
-            }
-            else
-            {
-                bspBehind = new BSPNode(tri);
-            }
-        }
-        else
-        {
-            // Triangle is intersecting !!!
-            Vector3 int1, int2;
-            if (tri->GetIntersectionWithPlane(*splitPlane, &int1, &int2) > 0) // This should always throw > 0
-            {
-                // Split the triangle into 2 parts (one of them must be triangulated, so 3 triangles)
-                Triangle *splitTri1, *splitTri2, *splitTri3;
-                tri->SplitWithPlane(splitPlane, &splitTri1, &splitTri2, &splitTri3);
-                InsertTriangle(splitTri1);
-                InsertTriangle(splitTri2);
-                InsertTriangle(splitTri3);
-            }
-            else
-            {
-                std::cerr << "This should never happen dafuq..." << std::endl;
+                // Triangle is intersecting !!!
+                Vector3 int1, int2;
+                if ( tri->GetIntersectionWithPlane(*root->splitPlane, &int1, &int2) > 0 ) // This should always throw > 0
+                {
+                    // Split the triangle into 2 parts (3 triangles (one of the parts is a quad, must be triangulated) )
+                    Triangle *splitTri1, *splitTri2, *splitTri3;
+                    tri->SplitWithPlane(root->splitPlane, &splitTri1, &splitTri2, &splitTri3);
+
+                    // Classify the split triangles either in wholly front or wholly behind
+                    if (splitTri1->IsWhollyInFrontOfPlane(root->splitPlane)) { trianglesWhollyInFront.push_back(splitTri1); }
+                    else                                                     {  trianglesWhollyBehind.push_back(splitTri1); }
+                    if (splitTri2->IsWhollyInFrontOfPlane(root->splitPlane)) { trianglesWhollyInFront.push_back(splitTri2); }
+                    else                                                     {  trianglesWhollyBehind.push_back(splitTri2); }
+                    if (splitTri3->IsWhollyInFrontOfPlane(root->splitPlane)) { trianglesWhollyInFront.push_back(splitTri3); }
+                    else                                                     {  trianglesWhollyBehind.push_back(splitTri3); }
+                }
+                else
+                {
+                    std::cerr << "This should never happen dafuq..." << std::endl;
+                }
             }
         }
     }
+
+    // Now apply recursively the algorithm
+    root->bspChildFront  = BSPNode::ConstructBSPTree(trianglesWhollyInFront);
+    root->bspChildBehind = BSPNode::ConstructBSPTree(trianglesWhollyBehind);
+    return root;
 }
 
 void BSPNode::Render(const Vector3 &viewPoint,
@@ -80,21 +79,31 @@ void BSPNode::Render(const Vector3 &viewPoint,
 
     if (splitPlane->IsBehind(viewPoint))
     {
-        firstToRender = bspFront;
-        secondToRender = bspBehind;
+        firstToRender = bspChildFront;
+        secondToRender = bspChildBehind;
     }
     else
     {
-        firstToRender = bspBehind;
-        secondToRender = bspFront;
+        firstToRender = bspChildBehind;
+        secondToRender = bspChildFront;
     }
 
-    if (firstToRender) firstToRender->Render(viewPoint, program);
+    if (firstToRender)
+    {
+        firstToRender->Render(viewPoint, program);
+    }
+
     for (Triangle *tri : triangles)
     {
+        ++renderStep;
         tri->Render(program);
+        if (renderStep >= GLWidget::GetInstance()->bspRenderSteps) return;
     }
-    if (secondToRender) secondToRender->Render(viewPoint, program);
+
+    if (secondToRender)
+    {
+        secondToRender->Render(viewPoint, program);
+    }
 
     if (GLWidget::GetInstance()->seePlanes)
     {

@@ -4,13 +4,14 @@ Plane::Plane()
 {
     vao = new VAO();
     vbo = new VBO();
-    color = Vector4(Math::Rand(), Math::Rand(), Math::Rand(), 0.95f);
+    color = Vector4(Math::Rand(), Math::Rand(), Math::Rand(), 0.5f);
 }
 
 Plane::Plane(const Vector3 &point, const Vector3 &normal) : Plane()
 {
     this->point = point;
     this->normal = normal.Normalized();
+    RefreshData();
 }
 
 Plane::~Plane()
@@ -31,6 +32,7 @@ bool Plane::IsInFront(const Vector3 &point)
 Plane *Plane::FromTriangle(const Triangle &t)
 {
     Plane *p = new Plane(t.p1, Vector3::Cross(t.p2-t.p1, t.p3-t.p1));
+    p->color = t.color;
     return p;
 }
 
@@ -38,7 +40,7 @@ void Plane::RefreshData()
 {
     Vector3 v1 = Vector3::Cross(normal, normal + Vector3(1,0,0)).Normalized();
     Vector3 v2 = Vector3::Cross(normal, v1).Normalized();
-    v1 *= 99999.0f; v2 *= 99999.0f;
+    v1 *= 100.0f; v2 *= 100.0f;
     Vector3 data[6] = {point-v1-v2, point-v1+v2, point+v1-v2,
                        point+v1-v2, point-v1+v2, point+v1+v2};
     vbo->Fill(&data[0], sizeof(Vector3) * 6);

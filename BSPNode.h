@@ -11,6 +11,8 @@ class BSPNode
 {
 public:
 
+    static int renderStep;
+
     Plane *splitPlane = nullptr;
 
     /**
@@ -19,8 +21,8 @@ public:
      */
     std::list <Triangle*> triangles;
 
-    BSPNode *bspFront  = nullptr;
-    BSPNode *bspBehind = nullptr;
+    BSPNode *bspChildBehind = nullptr;
+    BSPNode *bspChildFront  = nullptr;
 
     /**
      * @brief Builds a new BSPNode, taking as splitPlane a "prolongation"
@@ -30,14 +32,9 @@ public:
     virtual ~BSPNode();
 
     /**
-     * @brief Inserts a triangle into the BSPNode.
-     *  - If the triangle is wholly in front  of splitPlane, then it goes to bspFront.
-     *  - If the triangle is wholly in behind of splitPlane, then it goes to bspBehind.
-     *  - If the triangle is intersected by the splitPlane, then we split it into 2 triangles,
-     *    and each split triangle goes one to front and one to behind
-     *  - If the triangle belongs to the splitPlane, then its added to the triangles list.
+     * @brief Construct a BSPTree from a list of triangles
      */
-    void InsertTriangle(Triangle *tri);
+    static BSPNode *ConstructBSPTree(std::list<Triangle*> &triangles);
 
     /**
      * @brief 

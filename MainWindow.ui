@@ -10,18 +10,59 @@
     <height>525</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <pointsize>9</pointsize>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="5,1">
+   <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="5,0">
     <item>
      <widget class="GLWidget" name="glWidget" native="true">
-      <zorder>verticalLayoutWidget</zorder>
+      <zorder></zorder>
      </widget>
     </item>
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QGroupBox" name="groupBox_3">
+        <property name="title">
+         <string>Controls</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Mouse wheel - Zoom</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Shift + WASD - Panning</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>WASD - Rotate camera</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
       <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
@@ -36,13 +77,131 @@
        </spacer>
       </item>
       <item>
-       <widget class="QCheckBox" name="checkBox">
-        <property name="text">
-         <string>See planes</string>
+       <widget class="QGroupBox" name="groupBox">
+        <property name="title">
+         <string>Random Scene</string>
         </property>
-        <property name="checked">
-         <bool>true</bool>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,0">
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Random triangles</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="spinBox_2">
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>9999</number>
+             </property>
+             <property name="value">
+              <number>30</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton">
+           <property name="text">
+            <string>Generate random scene</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+        <zorder>label_2</zorder>
+        <zorder>horizontalLayoutWidget_2</zorder>
+        <zorder>horizontalLayoutWidget_2</zorder>
+        <zorder>pushButton</zorder>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="title">
+         <string>Viewing</string>
         </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,0">
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Steps</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="spinBox">
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>99999999</number>
+             </property>
+             <property name="value">
+              <number>9999999</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_3">
+           <property name="text">
+            <string>Draw with DepthTest</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_2">
+           <property name="text">
+            <string>See tri-divisions</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox">
+           <property name="text">
+            <string>See planes</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
@@ -55,7 +214,7 @@
      <x>0</x>
      <y>0</y>
      <width>781</width>
-     <height>25</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>
@@ -69,6 +228,11 @@
    <container>1</container>
    <slots>
     <slot>OnSeePlanesToggled(bool)</slot>
+    <slot>OnSeeTriDivisionsToggled(bool)</slot>
+    <slot>OnRenderStepsChanged(int)</slot>
+    <slot>OnDrawWithDepthTestToggled(bool)</slot>
+    <slot>GenerateRandomScene()</slot>
+    <slot>OnRandomSceneNumTrianglesChanged(int)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -85,8 +249,88 @@
      <y>499</y>
     </hint>
     <hint type="destinationlabel">
-     <x>615</x>
-     <y>364</y>
+     <x>588</x>
+     <y>362</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_2</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>glWidget</receiver>
+   <slot>OnSeeTriDivisionsToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>691</x>
+     <y>475</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>588</x>
+     <y>244</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>glWidget</receiver>
+   <slot>OnRenderStepsChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>694</x>
+     <y>418</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>117</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_3</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>glWidget</receiver>
+   <slot>OnDrawWithDepthTestToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>633</x>
+     <y>440</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>554</x>
+     <y>333</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>glWidget</receiver>
+   <slot>GenerateRandomScene()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>747</x>
+     <y>329</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>580</x>
+     <y>151</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>glWidget</receiver>
+   <slot>OnRandomSceneNumTrianglesChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>723</x>
+     <y>306</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>502</x>
+     <y>121</y>
     </hint>
    </hints>
   </connection>

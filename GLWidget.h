@@ -18,7 +18,11 @@ class GLWidget : public QGLWidget
     Q_OBJECT
 
 public:
-    bool seePlanes = true;
+    bool seePlanes = false;
+    bool seeTriDivisions = false;
+    bool drawWithDepthTest = false;
+    int randomSceneNumTriangles = 30;
+    int bspRenderSteps = 9999999;
 
     GLWidget(QWidget *parent = 0);
     virtual ~GLWidget();
@@ -54,7 +58,12 @@ private:
 
 public slots:
     void Update();
+    void GenerateRandomScene();
     void OnSeePlanesToggled(bool v);
+    void OnSeeTriDivisionsToggled(bool v);
+    void OnDrawWithDepthTestToggled(bool v);
+    void OnRenderStepsChanged(int v);
+    void OnRandomSceneNumTrianglesChanged(int n);
 };
 
 #endif // GLWIDGET_H

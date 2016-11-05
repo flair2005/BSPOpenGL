@@ -8,6 +8,7 @@ Triangle::Triangle()
     vbo = new VBO();
     vao = new VAO();
     color = Vector4(Math::RandAbsVector3(), 1);
+    RefreshData();
 }
 
 Triangle::Triangle(const Vector3 &p1, const Vector3 &p2, const Vector3 &p3) : Triangle()
@@ -15,6 +16,7 @@ Triangle::Triangle(const Vector3 &p1, const Vector3 &p2, const Vector3 &p3) : Tr
     this->p1 = p1;
     this->p2 = p2;
     this->p3 = p3;
+    RefreshData();
 }
 
 Triangle::~Triangle()
@@ -67,7 +69,14 @@ int Triangle::GetIntersectionWithPlane(const Plane &plane,
         {
             ++numIntersections;
             if (numIntersections == 1) { *intersection1 = intersectionResult; }
-            else                       { *intersection2 = intersectionResult; break; }
+            else
+            {
+                if (*intersection1 != intersectionResult)
+                {
+                    *intersection2 = intersectionResult;
+                    break;
+                }
+            }
         }
     }
     return numIntersections;
@@ -81,7 +90,8 @@ bool Triangle::SplitWithPlane(Plane *plane,
     Segment s12(p1,p2), s13(p1,p3), s23(p2,p3);
 
     Vector3 intersection1, intersection2;
-    if ( GetIntersectionWithPlane(*plane, &intersection1, &intersection2) > 0 )
+    int numIntersections = GetIntersectionWithPlane(*plane, &intersection1, &intersection2);
+    if ( numIntersections > 1 )
     {
         Segment intersectionSegment(intersection1, intersection2);
 
@@ -145,13 +155,17 @@ void Triangle::RefreshData()
 
 void Triangle::Render(ShaderProgram *program)
 {
-    program->SetUniformVec4("color", color);
     vao->Bind();
+
+    program->SetUniformVec4("color", color);
     glDrawArrays(GL_TRIANGLES, 0, 3);
-    program->SetUniformVec4("color", Vector4(1,1,0,1));
-    glDepthFunc(GL_LEQUAL);
-    glLineWidth(1.0f);
-    //glDrawArrays(GL_LINE_STRIP, 0, 4);
-    glDepthFunc(GL_LESS);
+
+    if (GLWidget::GetInstance()->seeTriDivisions)
+    {
+        program->SetUniformVec4("color", Vector4(Vector3::One - color.xyz(), 1));
+        glLineWidth(1.0f);
+        glDrawArrays(GL_LINE_STRIP, 0, 4);
+    }
+
     vao->UnBind();
 }
