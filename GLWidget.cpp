@@ -27,7 +27,7 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent)
 
 GLWidget::~GLWidget()
 {
-
+    if (bspRoot) { delete bspRoot; }
 }
 
 void GLWidget::keyPressEvent(QKeyEvent *ev)
@@ -99,7 +99,7 @@ void GLWidget::initializeGL()
 
     for (int i = 0; i < 30; ++i)
     {
-        int size = Math::RandAbs() * 5 + 5;
+        int size = Math::RandAbs() * 30 + 20;
         Vector3 v1 = Vector3(Math::Rand(), Math::Rand(), Math::Rand()).Normalized() * size;
         Vector3 v2 = Vector3(Math::Rand(), Math::Rand(), Math::Rand()).Normalized() * size;
         Vector3 v3 = Vector3(Math::Rand(), Math::Rand(), Math::Rand()).Normalized() * size;
@@ -108,12 +108,20 @@ void GLWidget::initializeGL()
         Triangle *tri = new Triangle(center + v1, center + v2, center + v3);
         tri->RefreshData();
 
-        triangles.push_back(tri);
+        if (bspRoot == nullptr)
+        {
+            bspRoot = new BSPNode(tri);
+        }
+        else
+        {
+            bspRoot->InsertTriangle(tri);
+        }
     }
 
+    /*
     for (int i = 0; i < 3; ++i)
     {
-        Plane *plane = new Plane(Vector3::Up, Math::RandVector3());
+        Plane *plane = new Plane(Math::RandAbsVector3() * 30.0f, Math::RandVector3());
         std::list<Triangle*> splitTriangles;
         for (auto it = triangles.begin(); it != triangles.end(); ++it)
         {
@@ -139,8 +147,9 @@ void GLWidget::initializeGL()
         plane->RefreshData();
         planes.push_back(plane);
     }
+    */
 
-    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
 
     glClearColor(1.0, 1.0, 1.0, 1.0);
@@ -155,19 +164,14 @@ void GLWidget::paintGL()
     program->SetUniformMat4("projection", camera->GetProjection());
     program->SetUniformMat4("view", camera->GetView());
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
+    bspRoot->Render(camera->position, program);
+    /*
     for (Triangle *tri : triangles)
     {
-        tri->Draw(program);
+        tri->Render(program);
     }
-
-    if (seePlanes)
-    {
-        for (Plane *plane : planes)
-        {
-            plane->Draw(program);
-        }
-    }
+    */
 
     program->UnBind();
 }

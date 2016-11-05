@@ -23,6 +23,36 @@ Triangle::~Triangle()
     delete vbo;
 }
 
+bool Triangle::IsWhollyInFrontOfPlane(Plane *plane)
+{
+    return Vector3::Dot((p1 - plane->point), plane->normal) > -0.05 &&
+           Vector3::Dot((p2 - plane->point), plane->normal) > -0.05 &&
+           Vector3::Dot((p3 - plane->point), plane->normal) > -0.05;
+}
+
+bool Triangle::IsWhollyBehindOfPlane(Plane *plane)
+{
+    return Vector3::Dot((p1 - plane->point), plane->normal) <= 0.005 &&
+           Vector3::Dot((p2 - plane->point), plane->normal) <= 0.005 &&
+           Vector3::Dot((p3 - plane->point), plane->normal) <= 0.005;
+}
+
+bool Triangle::IsPartOfPlane(Plane *plane) const
+{
+    Segment segments[3] = {Segment(p1,p2), Segment(p1,p3), Segment(p2,p3)};
+
+    int numPartOfPlane = 0;
+    for (const Segment &s : segments)
+    {
+        if (s.IsPartOfPlane(plane))
+        {
+            ++numPartOfPlane;
+            if (numPartOfPlane >= 2) { return true; }
+        }
+    }
+    return false;
+}
+
 int Triangle::GetIntersectionWithPlane(const Plane &plane,
                                        Vector3 *intersection1,
                                        Vector3 *intersection2) const
@@ -94,6 +124,9 @@ bool Triangle::SplitWithPlane(Plane *plane,
             *splitTri3 = new Triangle(intersection2, pointToSideB_1, pointToSideB_2);
         }
 
+        (*splitTri1)->color = color;
+        (*splitTri2)->color = color;
+        (*splitTri3)->color = color;
         (*splitTri1)->RefreshData();
         (*splitTri2)->RefreshData();
         (*splitTri3)->RefreshData();
@@ -110,7 +143,7 @@ void Triangle::RefreshData()
     vao->BindVBO(vbo, 0, 3);
 }
 
-void Triangle::Draw(ShaderProgram *program)
+void Triangle::Render(ShaderProgram *program)
 {
     program->SetUniformVec4("color", color);
     vao->Bind();
@@ -118,7 +151,7 @@ void Triangle::Draw(ShaderProgram *program)
     program->SetUniformVec4("color", Vector4(1,1,0,1));
     glDepthFunc(GL_LEQUAL);
     glLineWidth(1.0f);
-    glDrawArrays(GL_LINE_STRIP, 0, 4);
+    //glDrawArrays(GL_LINE_STRIP, 0, 4);
     glDepthFunc(GL_LESS);
     vao->UnBind();
 }

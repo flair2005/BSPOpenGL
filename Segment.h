@@ -13,6 +13,8 @@ public:
     Segment(const Vector3 &p1, const Vector3 &p2);
 
 
+    bool IsPartOfPlane(Plane *plane) const;
+
     int GetOrientation(const Vector3 &p);
 
     bool IsPointInLeft(const Vector3& p);

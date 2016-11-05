@@ -12,6 +12,14 @@ Segment::Segment(const Vector3 &p1, const Vector3 &p2)
     this->p2 = p2;
 }
 
+bool Segment::IsPartOfPlane(Plane *plane) const
+{
+    Vector3 v1 = plane->point - p1;
+    Vector3 v2 = plane->point - p2;
+    Vector3 perpend = Vector3::Cross(v1,v2);
+    return std::abs( Vector3::Dot(perpend, plane->normal) ) == 1.0f;
+}
+
 bool Segment::IsPointInLeft(const Vector3 &p)
 {
     return GetOrientation(p) > 0;

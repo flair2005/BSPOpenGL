@@ -18,9 +18,19 @@ Plane::~Plane()
 
 }
 
+bool Plane::IsBehind(const Vector3 &point)
+{
+    return Vector3::Dot(normal, point - this->point) <= 0.05;
+}
+
+bool Plane::IsInFront(const Vector3 &point)
+{
+    return Vector3::Dot(normal, point - this->point) >= -0.05;
+}
+
 Plane *Plane::FromTriangle(const Triangle &t)
 {
-    Plane *p = new Plane();
+    Plane *p = new Plane(t.p1, Vector3::Cross(t.p2-t.p1, t.p3-t.p1));
     return p;
 }
 
@@ -36,7 +46,7 @@ void Plane::RefreshData()
 
 }
 
-void Plane::Draw(ShaderProgram *program)
+void Plane::Render(ShaderProgram *program)
 {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

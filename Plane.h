@@ -23,10 +23,13 @@ public:
     Plane(const Vector3 &point, const Vector3 &normal);
     virtual ~Plane();
 
+    bool IsBehind(const Vector3 &point);
+    bool IsInFront(const Vector3 &point);
+
     static Plane *FromTriangle(const Triangle &t);
 
     void RefreshData();
-    void Draw(ShaderProgram *program);
+    void Render(ShaderProgram *program);
 
 };
 

@@ -3,7 +3,7 @@ QT += core gui widgets opengl
 
 LIBS += -lGLEW -lGL
 
-QMAKE_CXXFLAGS += --std=c++11
+QMAKE_CXXFLAGS += --std=c++11 -g
 
 greaterThan(QT_MAJOR_VERSION, 4):
 
@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     Plane.cpp \
     Segment.cpp \
     Input.cpp \
-    Math.cpp
+    Math.cpp \
+    BSPNode.cpp
 
 HEADERS  += MainWindow.h \
     GLWidget.h \
@@ -50,6 +51,7 @@ HEADERS  += MainWindow.h \
     Plane.h \
     Segment.h \
     Input.h \
-    Math.h
+    Math.h \
+    BSPNode.h
 
 FORMS += MainWindow.ui

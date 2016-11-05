@@ -21,6 +21,10 @@ public:
     Triangle(const Vector3 &p1, const Vector3 &p2, const Vector3 &p3);
     virtual ~Triangle();
 
+    bool IsWhollyInFrontOfPlane(Plane *plane);
+    bool IsWhollyBehindOfPlane(Plane *plane);
+    bool IsPartOfPlane(Plane *plane) const;
+
     // Returns the number of intersections
     int GetIntersectionWithPlane(const Plane &plane,
                                  Vector3 *intersection1,
@@ -32,7 +36,7 @@ public:
                         Triangle **splitTri3);
 
     void RefreshData();
-    void Draw(ShaderProgram *program);
+    void Render(ShaderProgram *program);
 };
 
 #endif // TRIANGLE_H

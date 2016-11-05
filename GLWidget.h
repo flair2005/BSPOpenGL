@@ -11,22 +11,21 @@
 #include "Plane.h"
 #include "Camera.h"
 #include "Triangle.h"
+#include "BSPNode.h"
 
 class GLWidget : public QGLWidget
 {
     Q_OBJECT
 
-private:
+public:
     bool seePlanes = true;
 
-public:
     GLWidget(QWidget *parent = 0);
     virtual ~GLWidget();
 
     QTimer timer;
 
-    std::list<Triangle*> triangles;
-    std::list<Plane*> planes;
+    BSPNode *bspRoot = nullptr;
 
     ShaderProgram *program = nullptr;
     Camera *camera = nullptr;
